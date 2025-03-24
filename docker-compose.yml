@@ -1,0 +1,74 @@
+version: "3"
+
+networks:
+  my-network2:
+
+
+services:
+    #GENERAL WEBSITE
+
+  zabbix-web-server:
+    image: zabbix/zabbix-web-service:alpine-7.0-latest
+    container_name: zabbix-web-server
+    stdin_open: true
+    ports:
+      - "10053:10053"
+    volumes:
+      - "./zabbix_web_services_files:/etc/zabbix"
+    networks:
+      - my-network2
+
+  zabbix-server-mysql:
+    image: zabbix/zabbix-server-mysql:alpine-7.0-latest
+    container_name: zabbix-server-mysql
+    #restart: "on-failure"
+    stdin_open: true
+    ports:
+      - "10051:10051"
+    environment:
+      - DB_SERVER_HOST=dbzabbix
+      - MYSQL_USER=zabbixusr
+      - MYSQL_PASSWORD=Zeihrh3rehiof
+      - ZBX_SERVER_HOST=localhost
+      - PHP_TZ=America/Merida
+      - MYSQL_DATABASE=zabbix
+    volumes:
+        - "./zabbix_files:/etc/zabbix/"
+    networks:
+      - my-network2
+
+  zabbix-web-nginx-mysql:
+    #build:
+    #    context: .
+    image: zabbix/zabbix-web-nginx-mysql:alpine-7.0-latest
+    container_name: zabbix-web-nginx-mysql
+    restart: "on-failure"
+    stdin_open: true
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_SERVER_HOST=dbzabbix
+      - MYSQL_USER=zabbixusr
+      - MYSQL_PASSWORD=Zeihrh3rehiof
+      - ZBX_SERVER_HOST=zabbix-server-mysql
+      - PHP_TZ=America/Merida
+    networks:
+      - my-network2
+
+  dbzabbix:
+    container_name: dbzabbix
+    image: mariadb:11.0.5
+    restart: always
+    ports:
+      - "3381:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=23.weE12~we.&trtrzh
+      - MYSQL_DATABASE=zabbix
+      - MYSQL_USER=zabbixusr
+      - MYSQL_PASSWORD=Zeihrh3rehiof
+    volumes:
+      - "./db/config:/etc/mysql/conf.d"
+      - "./db/files:/var/lib/mysql"
+      - "./db/log:/var/log/mysql"
+    networks:
+      - my-network2
