@@ -3,10 +3,8 @@ version: "3"
 networks:
   my-network2:
 
-
 services:
-    #GENERAL WEBSITE
-
+  
   zabbix-web-server:
     image: zabbix/zabbix-web-service:alpine-7.0-latest
     container_name: zabbix-web-server
@@ -38,8 +36,6 @@ services:
       - my-network2
 
   zabbix-web-nginx-mysql:
-    #build:
-    #    context: .
     image: zabbix/zabbix-web-nginx-mysql:alpine-7.0-latest
     container_name: zabbix-web-nginx-mysql
     restart: "on-failure"
